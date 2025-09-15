@@ -1,7 +1,18 @@
-import { Form, FormArray, FormGroup, ValidationErrors } from '@angular/forms';
+import { AbstractControl, Form, FormArray, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 
+
+async function sleep(){
+  return new Promise ((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 2500);
+  })
+}
 export class FormUtils {
   //Expresiones regulares
+  static namePattern = '^([a-zA-Z]+) ([a-zA-Z]+)';
+  static emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
+  static notOnlySpacesPattern = '^[a-zA-Z0-9]+$';
 
   static getTextError(errors: ValidationErrors) {
     for (const key of Object.keys(errors)) {
@@ -13,7 +24,17 @@ export class FormUtils {
         case 'min':
           return `Mínimo ${errors['min'].min} caracteres`;
         case 'email':
-          return 'Email no valido';
+          return 'El valor ingresado no es un correo electrónico';
+        case 'pattern':
+          if (errors['pattern'].requiredPattern === FormUtils.emailPattern) {
+            return 'El valor ingresado no es un correo electrónico';
+          }
+          return 'El valor ingresado no es válido';
+
+        case 'emailTaken':
+          return 'El correo ingresado ya está registrado'; 
+        default:
+          return `Error de validación no controlado ${key}`;
       }
     }
     return null;
@@ -55,4 +76,30 @@ export class FormUtils {
 
     return FormUtils.getTextError(errors);
   }
+
+  static matchFields(field1: string, field2: string): ValidatorFn {
+    return (group: AbstractControl) => {
+      const control1 = group.get(field1);
+      const control2 = group.get(field2);
+      if (!control1 || !control2) return null;
+      return control1.value === control2.value ? null : { fieldsMismatch: true };
+    };
+  }
+
+  static async checkingServerResponse (control: AbstractControl):Promise<ValidationErrors | null> {
+    await sleep();
+
+    const formValue = control.value;
+    if (formValue === 'hola@mundo.com') {
+      return {
+        emailTaken: true
+      };
+    }
+
+
+
+    return null
+  }
+
+
 }
