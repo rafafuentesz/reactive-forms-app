@@ -18,11 +18,18 @@ export class RegisterPageComponent {
     email: ['', [Validators.required, Validators.pattern(FormUtils.emailPattern)],
            [FormUtils.checkingServerResponse]
   ],
-    username: ['', [Validators.required, Validators.minLength(3), Validators.pattern(FormUtils.notOnlySpacesPattern)]],
+    username: [
+      '',
+      [Validators.required,
+        Validators.minLength(3),
+        Validators.pattern(FormUtils.notOnlySpacesPattern),
+        FormUtils.notStrider,
+      ]],
+
     password: ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', [Validators.required]],
   }, {
-    validators: this.formUtils.matchFields('password', 'confirmPassword')
+    validators: this.formUtils.matchFields('password', 'confirmPassword'),
   } )
 
   onSubmit() {
