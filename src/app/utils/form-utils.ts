@@ -30,9 +30,11 @@ export class FormUtils {
             return 'El valor ingresado no es un correo electrónico';
           }
           return 'El valor ingresado no es válido';
-
         case 'emailTaken':
-          return 'El correo ingresado ya está registrado'; 
+          return 'El correo ingresado ya está registrado';
+
+        case 'noStrider':
+          return 'No puede ser strider';
         default:
           return `Error de validación no controlado ${key}`;
       }
@@ -99,6 +101,16 @@ export class FormUtils {
 
 
     return null
+  }
+
+  static notStrider(control: AbstractControl): ValidationErrors | null {
+    const value = control.value
+    if (value.includes('strider')) {
+      return {
+        noStrider: true,
+      };
+    }
+    return null;
   }
 
 
